@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS - Virtual Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Required Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script> <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script> <!-- Mammoth.js for DOCX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script> <!-- SheetJS for Excel files -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script> <!-- Tesseract.js for OCR -->
+    <style>
+        /* Reset some basic styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1c1c1c, #333);
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Roboto', sans-serif;
+        }
+        .main {
+            width: 600px;
+            text-align: center;
+            padding: 30px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+        .file-upload, .manual-input, .input, .answer {
+            margin-top: 20px;
+        }
+        .file-upload input, .manual-input input, .manual-input button {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        /* Image container and icon styling */
+        .image-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .image img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #f0f0f0;
+            animation: rotate 10s linear infinite;
+        }
+
+        /* Animation for rotating image */
+        /* @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        } */
+
+        /* Title and description styling */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #f8f8f8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #c2c2c2;
+        }
+
+        /* Input section styling */
+        .input {
+            margin-top: 20px;
+        }
+
+        /* Talk button styling */
+        .talk {
+            font-size: 1.5rem;
+            padding: 15px;
+            border-radius: 50%;
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .talk:hover {
+            background: #ff80ab;
+        }
+
+        /* Button icon styling */
+        .talk i {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Animation for the microphone button */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Content text styling */
+        .content {
+            font-size: 1.2rem;
+            color: #f0f0f0;
+            margin-top: 10px;
+        }
+
+        /* Responsive behavior */
+        @media (max-width: 480px) {
+            .main {
+                width: 90%;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .talk {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Add this within the <style> tag in index.html */
+        .manual-input {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .manual-input input {
+            width: 250px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        
+        .manual-input button {
+            padding: 10px 15px;
+            background-color: #ff4081;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .manual-input button:hover {
+            background-color: #ff80ab;
+        }
+
+        /* Answer display area */
+        .answer {
+            font-size: 1.4rem;
+            color: #ffffff;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+          /* Styles for the new upload input */
+          .ocr-upload {
+            margin-top: 20px;
+        }
+
+        .ocr-upload input[type="file"] {
+            padding: 10px;
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <section class="main">
+        <div class="image-container">
+            <div class="image">
+                <img src="jarvishelm.png" alt="icon">
+            </div>
+            <h1>J A R V I S</h1>
+            <p>I'm a Virtual Assistant JARVIS, How may I help you?</p>
+        </div>
+        <div class="input">
+            <button class="talk"><i class="fas fa-microphone-alt"></i></button>
+            <h1 class="content"> Click here to speak</h1>
+        </div>
+
+            <!-- Add this just before the closing </section> -->
+        <div class="manual-input">
+            <input type="text" id="user-input" placeholder="Type your command here...">
+            <button id="submit-btn">Submit</button>
+        </div>
+
+        <!-- New section for displaying answers -->
+        <section class="answer" id="answer-display">
+            The answer will be displayed here.
+        </section>
+
+        <!-- File Upload Section -->
+        <div class="file-upload">
+            <input type="file" id="file-input" accept=".pdf,.docx,.txt,image/*">
+        </div>
+
+    </section>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
+
